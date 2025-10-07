@@ -22,11 +22,23 @@ struct NewsApp: App {
             fatalError("Could not create ModelContainer: \(error)")
         }
     }()
+    
+    @AppStorage("selectedTheme") private var selectedThemeRaw: String = AppTheme.system.rawValue
+
+    var currentTheme: ColorScheme? {
+        switch AppTheme(rawValue: selectedThemeRaw) ?? .system {
+        case .system: return nil
+        case .light: return .light
+        case .dark: return .dark
+        }
+    }
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            HomeView()
+                .preferredColorScheme(currentTheme)
         }
         .modelContainer(sharedModelContainer)
     }
 }
+
