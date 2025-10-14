@@ -34,7 +34,7 @@ struct HomeView: View {
                     .redacted(reason: viewModel.isLoading ? .placeholder : [])
                 }
             }
-            .navigationTitle("Top News")
+            .navigationTitle("\(viewModel.selectedNewsCategory.pageTitle)")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     NavigationLink(destination: SettingsView()) {

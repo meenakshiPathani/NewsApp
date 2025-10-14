@@ -10,14 +10,24 @@ import Observation
 
 @Observable
 final class NewsViewModel {
- var articles: [Article] = []
- var isLoading: Bool = false
+    
+    var articles: [Article] = []
+    var isLoading: Bool = false
     let service = NetworkService()
-
+    
     private var countryCode: String {
         UserDefaults.standard.string(forKey: AppConstants.StorageKey.selectedCountryCode) ?? AppConstants.defaultCountryCode
     }
-    
+       
+    var selectedNewsCategory: NewsCategory {
+        if let rawValue = UserDefaults.standard.string(forKey: AppConstants.StorageKey.selectedCategory),
+           let category = NewsCategory(rawValue: rawValue) {
+            return category
+        } else {
+            return .all // or `.all` if you added that
+        }
+    }
+
     
     func fetchNews() async {
         
@@ -25,8 +35,14 @@ final class NewsViewModel {
         defer { isLoading = false }
         
         do {
+            var queryParams: [String: String] = [AppConstants.API_PARARMS.country: countryCode]
+
+            if selectedNewsCategory != .all {
+                queryParams[AppConstants.API_PARARMS.category] = selectedNewsCategory.rawValue
+            }
+
             let result: NewsResponse = try await service.getRequest(
-                queryParams: [AppConstants.API_PARARMS.country: countryCode],
+                queryParams: queryParams,
                 responseType: NewsResponse.self
             )
             print(result)

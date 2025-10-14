@@ -10,7 +10,8 @@ import SwiftUI
 struct SettingsView: View {
     @AppStorage(AppConstants.StorageKey.selectedCountryCode) private var selectedCountryCode: String = AppConstants.defaultCountryCode
     @AppStorage(AppConstants.StorageKey.selectedTheme) private var selectedThemeRaw: String = AppTheme.system.rawValue
-    
+    @AppStorage(AppConstants.StorageKey.selectedCategory) private var selectedCategory: String = NewsCategory.business.rawValue
+
     var selectedTheme: AppTheme {
         get { AppTheme(rawValue: selectedThemeRaw) ?? .system }
         set { selectedThemeRaw = newValue.rawValue }
@@ -22,6 +23,14 @@ struct SettingsView: View {
                 Picker("Country", selection: $selectedCountryCode) {
                     ForEach(Country.countries) { country in
                         Text(country.name).tag(country.code)
+                    }
+                }
+            }
+            
+            Section(header: Text("Select Category")) {
+                Picker("Category", selection: $selectedCategory) {
+                    ForEach(NewsCategory.allCases) { category in
+                        Text(category.displayName).tag(category.rawValue)
                     }
                 }
             }
