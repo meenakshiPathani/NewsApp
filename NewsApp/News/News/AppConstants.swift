@@ -55,6 +55,9 @@ enum AppConstants {
         static let apiKey = "apiKey"
         static let country = "country"
         static let category = "category"
+        static let page = "page"
+        static let pageSize = "pageSize"
+
 
     }
     

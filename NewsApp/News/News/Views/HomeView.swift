@@ -9,7 +9,7 @@ import SwiftUI
 
 struct HomeView: View {
     @State private var viewModel = NewsViewModel()
-
+    
     var body: some View {
         NavigationView {
             Group {
@@ -27,6 +27,15 @@ struct HomeView: View {
                     List(viewModel.articles.isEmpty ? Array(repeating: placeholderArticle, count: 5) : viewModel.articles) { article in
                         NavigationLink(destination: ArticleDetailView(article: article)) {
                             ArticleRowView(article: article)
+                                .onAppear {
+                                    Task {
+                                        await viewModel.loadMoreIfNeeded(currentItem: article)
+                                    }
+                                }
+                        }
+                        .refreshable {
+                            viewModel.canLoadMore = true
+                            await viewModel.fetchNews(page: 1)
                         }
                         .disabled(viewModel.isLoading) // Prevent tap while loading
                     }
@@ -47,9 +56,16 @@ struct HomeView: View {
             .task {
                 await viewModel.fetchNews()
             }
+            .overlay(
+                Group {
+                    if viewModel.isLoading && viewModel.articles.isEmpty {
+                        ProgressView("Loading news...")
+                    }
+                }
+            )
         }
     }
-
+    
     /// Dummy article used for redacted placeholder
     private var placeholderArticle: Article {
         Article(source: Source(id: "", name: ""), author: nil, title: "", description: nil, url: "", urlToImage: nil, publishedAt: "", content: nil)

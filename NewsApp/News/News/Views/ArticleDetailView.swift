@@ -47,6 +47,12 @@ struct ArticleDetailView: View {
             .padding()
         }
         .navigationTitle(article.source.name)
+        .toolbar{
+            ShareLink(item: article.url) {
+                Label("Share", systemImage: "square.and.arrow.up")
+            }
+            
+        }
         .navigationBarTitleDisplayMode(.inline)
     }
 }
