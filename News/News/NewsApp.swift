@@ -6,9 +6,23 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct NewsApp: App {
+    var sharedModelContainer: ModelContainer = {
+        let schema = Schema([
+            Item.self,
+        ])
+        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+
+        do {
+            return try ModelContainer(for: schema, configurations: [modelConfiguration])
+        } catch {
+            fatalError("Could not create ModelContainer: \(error)")
+        }
+    }()
+    
     @AppStorage("selectedTheme") private var selectedThemeRaw: String = AppTheme.system.rawValue
 
     var currentTheme: ColorScheme? {
@@ -24,6 +38,7 @@ struct NewsApp: App {
             HomeView()
                 .preferredColorScheme(currentTheme)
         }
+        .modelContainer(sharedModelContainer)
     }
 }
 
